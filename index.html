@@ -1,167 +1,497 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Чистый круг — Осада Радайса</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Legends of Radayse</title>
     <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
+            font-family: 'Segoe UI', system-ui, Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0f1e 0%, #0f172a 100%);
+            color: #e2e8f0;
+            padding: 16px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 700px;
             margin: 0 auto;
-            padding: 20px;
-            background: #1a1a2e;
-            color: #eee;
         }
-        .sword {
-            background: #16213e;
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
             padding: 20px;
-            border-radius: 10px;
-            margin: 10px 0;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-        button {
-            background: #e94560;
-            color: white;
-            border: none;
+        h1 {
+            font-size: 1.8rem;
+            margin: 0 0 6px 0;
+            text-align: center;
+            background: linear-gradient(135deg, #fbbf24, #ef4444, #facc15);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+        .sub {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            margin-bottom: 20px;
+        }
+        .radayse-panel {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .radayse {
+            flex: 1;
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+        .radayse-bar-container {
+            background: #334155;
+            border-radius: 20px;
+            height: 18px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+        .radayse-bar {
+            background: #f97316;
+            width: 100%;
+            height: 100%;
+            transition: width 0.2s ease;
+        }
+        .hero-select {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .hero-btn {
+            background: #334155;
+            border: 2px solid #475569;
+            border-radius: 60px;
             padding: 10px 20px;
-            margin: 5px;
-            border-radius: 5px;
+            font-weight: bold;
             cursor: pointer;
+            transition: 0.1s;
+            color: white;
+        }
+        .hero-btn.selected {
+            background: #ef4444;
+            border-color: #fbbf24;
+            box-shadow: 0 0 8px #f97316;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .hero {
+            flex: 1;
+            background: #1e293b;
+            border-radius: 24px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid #334155;
+            min-width: 160px;
+        }
+        .hero-name {
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+        }
+        .hero-class {
+            font-size: 0.7rem;
+            color: #c084fc;
+            margin-bottom: 12px;
+        }
+        .hp-bar-container {
+            background: #334155;
+            border-radius: 20px;
+            height: 12px;
+            margin: 10px 0;
+            overflow: hidden;
         }
         .hp-bar {
-            background: #333;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .hp-fill {
-            background: #4caf50;
-            height: 20px;
+            background: #22c55e;
             width: 100%;
+            height: 100%;
+            transition: width 0.2s ease;
+        }
+        .hp-text {
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .vs {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #f97316;
+            align-self: center;
+            padding: 0 5px;
+        }
+        .scroll-area {
+            background: #0f172a;
+            border-radius: 24px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .turn-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .turn-label {
+            width: 55px;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        select {
+            background: #334155;
+            color: white;
+            border: 1px solid #475569;
+            border-radius: 40px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            flex: 1;
+            font-weight: 500;
+        }
+        .fight-btn, .shop-btn {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.1s ease;
+            margin-top: 10px;
+        }
+        .shop-btn {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+        }
+        .fight-btn:active, .shop-btn:active {
+            transform: scale(0.97);
         }
         .log {
-            background: #0f3460;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
+            background: #0f172a;
+            border-radius: 20px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
             height: 200px;
-            overflow-y: scroll;
+            overflow-y: auto;
+            border: 1px solid #334155;
+        }
+        .log div {
+            margin-bottom: 6px;
+            border-left: 3px solid #f97316;
+            padding-left: 10px;
+        }
+        .gold {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fbbf24;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.65rem;
+            color: #475569;
+            margin-top: 15px;
+        }
+        @media (max-width: 550px) {
+            .hero-stats { flex-direction: column; }
+            .vs { text-align: center; margin: 5px 0; }
+            .turn-row { flex-direction: column; align-items: stretch; }
+            .turn-label { width: auto; }
         }
     </style>
 </head>
 <body>
-    <h1>⚔️ ЧИСТЫЙ КРУГ — ОСАДА РАДАЙСА ⚔️</h1>
-    
-    <div class="sword">
-        <h2>📜 СВИТОК НА 10 ХОДОВ</h2>
-        <div id="scroll"></div>
-        <button id="fightBtn">⚔️ НАЧАТЬ ДУЭЛЬ ⚔️</button>
+<div class="container">
+    <div class="card">
+        <h1>⚔️ LEGENDS OF RADAYSE ⚔️</h1>
+        <div class="sub">Разрушь Радайс противника</div>
+        
+        <div class="gold">💰 ЗОЛОТО: <span id="goldAmount">0</span></div>
+
+        <div class="radayse-panel">
+            <div class="radayse">
+                🏛️ ТВОЙ РАДАЙС
+                <div class="radayse-bar-container"><div class="radayse-bar" id="playerRadayseBar" style="width:100%"></div></div>
+                <span id="playerRadayseHp">500</span> / 500
+            </div>
+            <div class="radayse">
+                🏛️ РАДАЙС ВРАГА
+                <div class="radayse-bar-container"><div class="radayse-bar" id="enemyRadayseBar" style="width:100%"></div></div>
+                <span id="enemyRadayseHp">500</span> / 500
+            </div>
+        </div>
+
+        <div class="hero-select" id="heroSelect">
+            <div class="hero-btn" data-hero="tank">🛡️ Айрон (Танк)</div>
+            <div class="hero-btn" data-hero="mage">🔥 Спарк (Маг)</div>
+            <div class="hero-btn" data-hero="assassin">🌙 Шейд (Убийца)</div>
+        </div>
     </div>
 
-    <div class="sword">
-        <h3>📊 ТЕКУЩИЙ БОЙ</h3>
-        <div>Твой герой: <span id="playerHp">1000</span> HP</div>
-        <div class="hp-bar"><div class="hp-fill" id="playerHpBar" style="width:100%"></div></div>
-        <div>Враг: <span id="enemyHp">1000</span> HP</div>
-        <div class="hp-bar"><div class="hp-fill" id="enemyHpBar" style="width:100%"></div></div>
+    <div class="card" id="duelPanel">
+        <div class="hero-stats" id="heroStats"></div>
+        <h3>📜 СВИТОК (10 ходов)</h3>
+        <div class="scroll-area" id="scrollContainer"></div>
+        <button class="fight-btn" id="fightBtn">⚔️ НАЧАТЬ ДУЭЛЬ ⚔️</button>
     </div>
 
-    <div class="sword">
-        <h3>📋 ЛОГ БОЯ</h3>
+    <div class="card" id="logCard">
+        <h3>📋 ЛЕТОПИСЬ БОЯ</h3>
         <div class="log" id="log"></div>
     </div>
+    
+    <div class="footer">🎲 Выиграй дуэль — нанеси удар по Радайсу (D100)</div>
+</div>
 
-    <script>
-        // Стили атаки (для теста пока упростим)
-        const styles = ['Клинок', 'Лук', 'Магия', 'Огонь', 'Лёд', 'Молния', 'Камень', 'Ветер', 'Тьма', 'Свет'];
+<script>
+    // ---------- ГЕРОИ ----------
+    const heroes = {
+        tank: { name: "🛡️ Айрон", role: "Танк", hp: 1500, bonus: 20, classBonus: 20, spellBonus: 0 },
+        mage: { name: "🔥 Спарк", role: "Маг", hp: 800, bonus: 30, classBonus: 30, spellBonus: 5 },
+        assassin: { name: "🌙 Шейд", role: "Убийца", hp: 800, bonus: 35, classBonus: 35, spellBonus: 10 }
+    };
+    
+    let currentHero = "tank";
+    let playerHP = 1500;
+    let enemyHP = 1500;
+    let playerRadayse = 500;
+    let enemyRadayse = 500;
+    let gold = 0;
+    
+    let playerShield = 0;
+    let enemyShield = 0;
+    
+    // Стили и заклинания
+    const styleNames = ["⚔️ Клинок", "🏹 Лук", "🔮 Магия", "🔥 Огонь", "❄️ Лёд", "⚡ Молния", "🪨 Камень", "🍃 Ветер", "🌑 Тьма", "✨ Свет"];
+    const spellNames = ["🔥 Огненный шар", "💚 Лечение", "🛡️ Каменная кожа"];
+    
+    // Таблица контров (10x10)
+    let counterMatrix = Array(10).fill().map(() => Array(10).fill(1));
+    counterMatrix[0][1]=1.5; counterMatrix[0][8]=1.5; counterMatrix[0][6]=0.5; counterMatrix[0][2]=0.5;
+    counterMatrix[1][2]=1.5; counterMatrix[1][7]=1.5; counterMatrix[1][0]=0.5; counterMatrix[1][6]=0.5;
+    counterMatrix[2][6]=1.5; counterMatrix[2][4]=1.5; counterMatrix[2][1]=0.5; counterMatrix[2][8]=0.5;
+    counterMatrix[3][4]=1.5; counterMatrix[3][7]=1.5; counterMatrix[3][2]=0.5; counterMatrix[3][6]=0.5;
+    counterMatrix[4][6]=1.5; counterMatrix[4][5]=1.5; counterMatrix[4][3]=0.5; counterMatrix[4][7]=0.5;
+    counterMatrix[5][7]=1.5; counterMatrix[5][9]=1.5; counterMatrix[5][4]=0.5; counterMatrix[5][6]=0.5;
+    counterMatrix[6][0]=1.5; counterMatrix[6][5]=1.5; counterMatrix[6][2]=0.5; counterMatrix[6][4]=0.5;
+    counterMatrix[7][8]=2.0; counterMatrix[7][9]=2.0; counterMatrix[7][1]=0.5; counterMatrix[7][3]=0.5;
+    counterMatrix[8][0]=1.5; counterMatrix[8][2]=1.5; counterMatrix[8][7]=0.5; counterMatrix[8][9]=0.5;
+    counterMatrix[9][8]=1.5; counterMatrix[9][1]=1.5; counterMatrix[9][5]=0.5; counterMatrix[9][7]=0.5;
+    
+    function getDamageMultiplier(myStyle, enemyStyle) { return counterMatrix[myStyle][enemyStyle]; }
+    function calculateDamage(style, enemyStyle) {
+        const base = Math.floor(Math.random() * 70) + 30;
+        return Math.floor(base * getDamageMultiplier(style, enemyStyle));
+    }
+    
+    function updateUI() {
+        const hero = heroes[currentHero];
+        const playerPercent = (playerHP / hero.hp) * 100;
+        const enemyPercent = (enemyHP / 800) * 100; // враг условный маг 800 HP
+        document.getElementById('playerHpBar').style.width = `${Math.max(0, playerPercent)}%`;
+        document.getElementById('enemyHpBar').style.width = `${Math.max(0, enemyPercent)}%`;
+        document.getElementById('playerHp').innerText = Math.max(0, playerHP);
+        document.getElementById('enemyHp').innerText = Math.max(0, enemyHP);
         
-        // Создаём форму для свитка
-        const scrollDiv = document.getElementById('scroll');
-        for(let i = 1; i <= 10; i++) {
-            const select = document.createElement('select');
-            select.id = `turn${i}`;
-            for(let s = 0; s < styles.length; s++) {
-                const option = document.createElement('option');
-                option.value = s + 1;
-                option.text = `${i}. ${styles[s]}`;
-                select.appendChild(option);
+        document.getElementById('playerRadayseBar').style.width = `${(playerRadayse/500)*100}%`;
+        document.getElementById('enemyRadayseBar').style.width = `${(enemyRadayse/500)*100}%`;
+        document.getElementById('playerRadayseHp').innerText = playerRadayse;
+        document.getElementById('enemyRadayseHp').innerText = enemyRadayse;
+        document.getElementById('goldAmount').innerText = gold;
+    }
+    
+    function addLog(msg) {
+        const logDiv = document.getElementById('log');
+        const entry = document.createElement('div');
+        entry.innerHTML = msg;
+        logDiv.appendChild(entry);
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+    
+    function applySpell(caster, target, spellId, isPlayer) {
+        if (spellId === 0) { // урон
+            const dmg = Math.floor(Math.random() * 50) + 40;
+            if (isPlayer) { enemyHP -= dmg; addLog(`🔥 ${caster} → Огненный шар! Урон ${dmg}`); }
+            else { playerHP -= dmg; addLog(`🔥 ${caster} → Огненный шар! Урон ${dmg}`); }
+        } else if (spellId === 1) { // лечение
+            const heal = Math.floor(Math.random() * 50) + 30;
+            if (isPlayer) { playerHP = Math.min(heroes[currentHero].hp, playerHP + heal); addLog(`💚 ${caster} лечится на ${heal}`); }
+            else { enemyHP = Math.min(800, enemyHP + heal); addLog(`💚 ${caster} лечится на ${heal}`); }
+        } else if (spellId === 2) { // щит
+            const shield = 70;
+            if (isPlayer) { playerShield += shield; addLog(`🛡️ ${caster} щит ${shield} на след. ход`); }
+            else { enemyShield += shield; addLog(`🛡️ ${caster} щит ${shield} на след. ход`); }
+        }
+        updateUI();
+    }
+    
+    function generateEnemyScroll() {
+        const scroll = [];
+        const spellTurn = Math.floor(Math.random() * 10);
+        const randomSpell = Math.floor(Math.random() * 3);
+        for (let i = 0; i < 10; i++) {
+            if (i === spellTurn) scroll.push({ type: 'spell', idx: randomSpell });
+            else {
+                const r = Math.random();
+                let styleIdx = r < 0.5 ? 8 : (r < 0.8 ? 0 : Math.floor(Math.random() * 10));
+                scroll.push({ type: 'style', idx: styleIdx });
             }
-            scrollDiv.appendChild(select);
-            scrollDiv.appendChild(document.createElement('br'));
         }
-
-        // Простая логика боя (пока без заклинаний, только для теста)
-        function calculateDamage(style, enemyStyle) {
-            // Базовая формула: D20 + бонус
-            const base = Math.floor(Math.random() * 20) + 10;
-            // Простая система контров (упрощённо)
-            if(style === enemyStyle) return base;
-            if((style === 1 && enemyStyle === 2) || (style === 2 && enemyStyle === 1)) return base * 1.5;
-            return base;
+        return scroll;
+    }
+    
+    // Создание свитка
+    const allActions = [...styleNames.map((name, idx) => ({ type: 'style', idx, label: name })), ...spellNames.map((name, idx) => ({ type: 'spell', idx, label: name }))];
+    const scrollContainer = document.getElementById('scrollContainer');
+    for (let i = 1; i <= 10; i++) {
+        const row = document.createElement('div'); row.className = 'turn-row';
+        const label = document.createElement('div'); label.className = 'turn-label'; label.innerText = `Ход ${i}`;
+        const select = document.createElement('select'); select.id = `turn${i}`;
+        allActions.forEach((action, optIdx) => { const option = document.createElement('option'); option.value = optIdx; option.text = action.label; select.appendChild(option); });
+        row.appendChild(label); row.appendChild(select);
+        scrollContainer.appendChild(row);
+    }
+    
+    function startDuel() {
+        playerHP = heroes[currentHero].hp;
+        enemyHP = 800;
+        playerShield = 0;
+        enemyShield = 0;
+        updateUI();
+        document.getElementById('log').innerHTML = '';
+        addLog(`⚔️ ДУЭЛЬ: ${heroes[currentHero].name} vs 👹 ТЕНЕВОЙ МАГ`);
+        addLog(`🏛️ Радайс: ${playerRadayse} | ${enemyRadayse}`);
+        
+        const playerScroll = [];
+        for (let i = 1; i <= 10; i++) {
+            const val = parseInt(document.getElementById(`turn${i}`).value);
+            playerScroll.push(allActions[val]);
         }
-
-        let playerHP = 1000;
-        let enemyHP = 1000;
-
-        function updateUI() {
-            document.getElementById('playerHp').innerText = Math.max(0, playerHP);
-            document.getElementById('enemyHp').innerText = Math.max(0, enemyHP);
-            document.getElementById('playerHpBar').style.width = `${(playerHP/1000)*100}%`;
-            document.getElementById('enemyHpBar').style.width = `${(enemyHP/1000)*100}%`;
-        }
-
-        function addLog(msg) {
-            const logDiv = document.getElementById('log');
-            logDiv.innerHTML += `<div>${msg}</div>`;
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
-
-        document.getElementById('fightBtn').onclick = () => {
-            // Сброс
-            playerHP = 1000;
-            enemyHP = 1000;
+        const enemyScroll = generateEnemyScroll();
+        
+        for (let turn = 0; turn < 10; turn++) {
+            if (playerHP <= 0 || enemyHP <= 0) break;
+            if (playerShield > 0) { addLog(`🛡️ Твой щит поглощает урон`); playerShield = 0; }
+            if (enemyShield > 0) { addLog(`🛡️ Щит врага поглощает урон`); enemyShield = 0; }
+            
+            const pa = playerScroll[turn], ea = enemyScroll[turn];
+            if (pa.type === 'spell') applySpell(heroes[currentHero].name, "Враг", pa.idx, true);
+            if (ea.type === 'spell') applySpell("👹 Теневой Маг", heroes[currentHero].name, ea.idx, false);
+            
+            if (pa.type === 'style' && ea.type === 'style') {
+                const pDmg = calculateDamage(pa.idx, ea.idx);
+                const eDmg = calculateDamage(ea.idx, pa.idx);
+                addLog(`🔻 ХОД ${turn+1} | 🗡️ ${styleNames[pa.idx]} vs 👹 ${styleNames[ea.idx]}`);
+                addLog(`   ⚡ Урон: +${pDmg} / -${eDmg}`);
+                if (playerShield === 0) playerHP -= eDmg;
+                if (enemyShield === 0) enemyHP -= pDmg;
+            }
+            else if (pa.type === 'style' && ea.type === 'spell') {
+                const pDmg = calculateDamage(pa.idx, 0);
+                addLog(`🔻 ХОД ${turn+1} | 🗡️ ${styleNames[pa.idx]} против заклинания | Урон +${pDmg}`);
+                if (enemyShield === 0) enemyHP -= pDmg;
+            }
+            else if (pa.type === 'spell' && ea.type === 'style') {
+                const eDmg = calculateDamage(ea.idx, 0);
+                addLog(`🔻 ХОД ${turn+1} | 👹 ${styleNames[ea.idx]} против заклинания | Урон -${eDmg}`);
+                if (playerShield === 0) playerHP -= eDmg;
+            }
             updateUI();
-            document.getElementById('log').innerHTML = '';
-            addLog('⚔️ ДУЭЛЬ НАЧАЛАСЬ ⚔️');
-            
-            // Читаем свиток
-            const myScroll = [];
-            for(let i = 1; i <= 10; i++) {
-                myScroll.push(parseInt(document.getElementById(`turn${i}`).value));
-            }
-            
-            // Противник выбирает случайные стили
-            const enemyScroll = [];
-            for(let i = 0; i < 10; i++) {
-                enemyScroll.push(Math.floor(Math.random() * 10) + 1);
-            }
-            
-            // Проводим 10 ходов
-            for(let i = 0; i < 10; i++) {
-                const myStyle = myScroll[i];
-                const enemyStyle = enemyScroll[i];
-                
-                const myDamage = calculateDamage(myStyle, enemyStyle);
-                const enemyDamage = calculateDamage(enemyStyle, myStyle);
-                
-                addLog(`ХОД ${i+1}: Ты — ${styles[myStyle-1]} | Враг — ${styles[enemyStyle-1]}`);
-                
-                playerHP -= enemyDamage;
-                enemyHP -= myDamage;
-                
-                addLog(`  → Ты нанёс ${myDamage} урона | Враг нанёс ${enemyDamage} урона`);
-                addLog(`  → Твой HP: ${Math.max(0, playerHP)} | Враг HP: ${Math.max(0, enemyHP)}`);
-                
-                updateUI();
-                
-                if(playerHP <= 0 || enemyHP <= 0) break;
-            }
-            
-            // Итог
-            if(playerHP <= 0 && enemyHP <= 0) addLog('🤝 НИЧЬЯ! Оба пали в бою 🤝');
-            else if(playerHP <= 0) addLog('💀 ВЫ ПРОИГРАЛИ... 💀');
-            else if(enemyHP <= 0) addLog('🏆 ПОБЕДА! Враг повержен! 🏆');
-            else addLog('⏰ БОЙ ОКОНЧЕН. Победитель по очкам...');
-        };
-    </script>
+            addLog(`   ❤️ Ты ${Math.max(0, playerHP)} | Враг ${Math.max(0, enemyHP)}`);
+        }
+        
+        let duelWinner = null;
+        if (playerHP <= 0 && enemyHP <= 0) duelWinner = 'draw';
+        else if (playerHP <= 0) duelWinner = 'enemy';
+        else if (enemyHP <= 0) duelWinner = 'player';
+        else {
+            const pPoints = Math.floor(playerHP / 10);
+            const ePoints = Math.floor(enemyHP / 10);
+            duelWinner = pPoints > ePoints ? 'player' : (ePoints > pPoints ? 'enemy' : 'draw');
+            addLog(`📊 По очкам: ${pPoints} vs ${ePoints}`);
+        }
+        
+        if (duelWinner === 'player') {
+            const dmg = Math.floor(Math.random() * 100) + 1; // D100
+            enemyRadayse = Math.max(0, enemyRadayse - dmg);
+            addLog(`🏆 ПОБЕДА В ДУЭЛИ! Удар по Радайсу: ${dmg} урона!`);
+            addLog(`🏛️ Радайс врага: ${enemyRadayse} HP`);
+        } else if (duelWinner === 'enemy') {
+            const dmg = Math.floor(Math.random() * 100) + 1;
+            playerRadayse = Math.max(0, playerRadayse - dmg);
+            addLog(`💀 ПОРАЖЕНИЕ... Враг бьёт по твоему Радайсу: ${dmg} урона`);
+            addLog(`🏛️ Твой Радайс: ${playerRadayse} HP`);
+        } else {
+            addLog(`🤝 НИЧЬЯ — удара нет`);
+        }
+        updateUI();
+        
+        if (playerRadayse <= 0) {
+            addLog(`💀💀💀 ТВОЙ РАДАЙС РАЗРУШЕН! ПОРАЖЕНИЕ 💀💀💀`);
+            alert("Твой Радайс пал... Ты проиграл!");
+        } else if (enemyRadayse <= 0) {
+            addLog(`🏆🏆🏆 РАДАЙС ВРАГА ПАЛ! ПОБЕДА! 🏆🏆🏆`);
+            gold += 100;
+            updateUI();
+            alert(`ПОБЕДА! +100 золота. Твоё золото: ${gold}`);
+        } else {
+            if (confirm("Дуэль окончена. Следующий раунд?")) startDuel();
+        }
+    }
+    
+    // Выбор героя
+    document.querySelectorAll('.hero-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.hero-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            currentHero = btn.dataset.hero;
+            const hero = heroes[currentHero];
+            document.getElementById('heroStats').innerHTML = `
+                <div class="hero"><div class="hero-name">${hero.name}</div><div class="hero-class">${hero.role}</div>
+                <div class="hp-bar-container"><div class="hp-bar" id="playerHpBar" style="width:100%"></div></div>
+                <div class="hp-text">❤️ <span id="playerHp">${hero.hp}</span> / ${hero.hp}</div></div>
+                <div class="vs">VS</div>
+                <div class="hero"><div class="hero-name">👹 ТЕНЕВОЙ МАГ</div><div class="hero-class">Маг</div>
+                <div class="hp-bar-container"><div class="hp-bar" id="enemyHpBar" style="width:100%"></div></div>
+                <div class="hp-text">❤️ <span id="enemyHp">800</span> / 800</div></div>
+            `;
+            playerHP = hero.hp;
+            enemyHP = 800;
+            updateUI();
+        });
+    });
+    document.querySelector('.hero-btn').click();
+    
+    document.getElementById('fightBtn').onclick = () => startDuel();
+</script>
 </body>
 </html>
