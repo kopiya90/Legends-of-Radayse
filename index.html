@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Чистый круг — Осада Радайса</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #eee;
+        }
+        .sword {
+            background: #16213e;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .hp-bar {
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .hp-fill {
+            background: #4caf50;
+            height: 20px;
+            width: 100%;
+        }
+        .log {
+            background: #0f3460;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+<body>
+    <h1>⚔️ ЧИСТЫЙ КРУГ — ОСАДА РАДАЙСА ⚔️</h1>
+    
+    <div class="sword">
+        <h2>📜 СВИТОК НА 10 ХОДОВ</h2>
+        <div id="scroll"></div>
+        <button id="fightBtn">⚔️ НАЧАТЬ ДУЭЛЬ ⚔️</button>
+    </div>
+
+    <div class="sword">
+        <h3>📊 ТЕКУЩИЙ БОЙ</h3>
+        <div>Твой герой: <span id="playerHp">1000</span> HP</div>
+        <div class="hp-bar"><div class="hp-fill" id="playerHpBar" style="width:100%"></div></div>
+        <div>Враг: <span id="enemyHp">1000</span> HP</div>
+        <div class="hp-bar"><div class="hp-fill" id="enemyHpBar" style="width:100%"></div></div>
+    </div>
+
+    <div class="sword">
+        <h3>📋 ЛОГ БОЯ</h3>
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        // Стили атаки (для теста пока упростим)
+        const styles = ['Клинок', 'Лук', 'Магия', 'Огонь', 'Лёд', 'Молния', 'Камень', 'Ветер', 'Тьма', 'Свет'];
+        
+        // Создаём форму для свитка
+        const scrollDiv = document.getElementById('scroll');
+        for(let i = 1; i <= 10; i++) {
+            const select = document.createElement('select');
+            select.id = `turn${i}`;
+            for(let s = 0; s < styles.length; s++) {
+                const option = document.createElement('option');
+                option.value = s + 1;
+                option.text = `${i}. ${styles[s]}`;
+                select.appendChild(option);
+            }
+            scrollDiv.appendChild(select);
+            scrollDiv.appendChild(document.createElement('br'));
+        }
+
+        // Простая логика боя (пока без заклинаний, только для теста)
+        function calculateDamage(style, enemyStyle) {
+            // Базовая формула: D20 + бонус
+            const base = Math.floor(Math.random() * 20) + 10;
+            // Простая система контров (упрощённо)
+            if(style === enemyStyle) return base;
+            if((style === 1 && enemyStyle === 2) || (style === 2 && enemyStyle === 1)) return base * 1.5;
+            return base;
+        }
+
+        let playerHP = 1000;
+        let enemyHP = 1000;
+
+        function updateUI() {
+            document.getElementById('playerHp').innerText = Math.max(0, playerHP);
+            document.getElementById('enemyHp').innerText = Math.max(0, enemyHP);
+            document.getElementById('playerHpBar').style.width = `${(playerHP/1000)*100}%`;
+            document.getElementById('enemyHpBar').style.width = `${(enemyHP/1000)*100}%`;
+        }
+
+        function addLog(msg) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += `<div>${msg}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        document.getElementById('fightBtn').onclick = () => {
+            // Сброс
+            playerHP = 1000;
+            enemyHP = 1000;
+            updateUI();
+            document.getElementById('log').innerHTML = '';
+            addLog('⚔️ ДУЭЛЬ НАЧАЛАСЬ ⚔️');
+            
+            // Читаем свиток
+            const myScroll = [];
+            for(let i = 1; i <= 10; i++) {
+                myScroll.push(parseInt(document.getElementById(`turn${i}`).value));
+            }
+            
+            // Противник выбирает случайные стили
+            const enemyScroll = [];
+            for(let i = 0; i < 10; i++) {
+                enemyScroll.push(Math.floor(Math.random() * 10) + 1);
+            }
+            
+            // Проводим 10 ходов
+            for(let i = 0; i < 10; i++) {
+                const myStyle = myScroll[i];
+                const enemyStyle = enemyScroll[i];
+                
+                const myDamage = calculateDamage(myStyle, enemyStyle);
+                const enemyDamage = calculateDamage(enemyStyle, myStyle);
+                
+                addLog(`ХОД ${i+1}: Ты — ${styles[myStyle-1]} | Враг — ${styles[enemyStyle-1]}`);
+                
+                playerHP -= enemyDamage;
+                enemyHP -= myDamage;
+                
+                addLog(`  → Ты нанёс ${myDamage} урона | Враг нанёс ${enemyDamage} урона`);
+                addLog(`  → Твой HP: ${Math.max(0, playerHP)} | Враг HP: ${Math.max(0, enemyHP)}`);
+                
+                updateUI();
+                
+                if(playerHP <= 0 || enemyHP <= 0) break;
+            }
+            
+            // Итог
+            if(playerHP <= 0 && enemyHP <= 0) addLog('🤝 НИЧЬЯ! Оба пали в бою 🤝');
+            else if(playerHP <= 0) addLog('💀 ВЫ ПРОИГРАЛИ... 💀');
+            else if(enemyHP <= 0) addLog('🏆 ПОБЕДА! Враг повержен! 🏆');
+            else addLog('⏰ БОЙ ОКОНЧЕН. Победитель по очкам...');
+        };
+    </script>
+</body>
+</html>
